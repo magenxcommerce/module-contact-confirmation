@@ -1,0 +1,26 @@
+{
+    "name": "magenx/module-contact-confirmation",
+    "description": "Sends an auto-reply confirmation email to the visitor who submits the contact form, in addition to the store-owner notification that stock Magento_Contact already sends. Works for both the Luma POST and the GraphQL contactUs mutation by hooking the shared Magento\\Contact\\Model\\Mail chokepoint; leaves the core module untouched.",
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": "~8.3.0||~8.4.0||~8.5.0",
+        "magento/framework": "*",
+        "magento/module-contact": "*",
+        "magento/module-store": "*"
+    },
+    "type": "magento2-module",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Magenx\\ContactConfirmation\\": ""
+        }
+    }
+}

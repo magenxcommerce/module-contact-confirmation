@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magenx. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!--
+        Magento\Contact\Model\Mail::send() is the single chokepoint that BOTH the
+        Luma controller (Magento\Contact\Controller\Index\Post) and the GraphQL
+        resolver (Magento\ContactGraphQl\Model\Resolver\ContactUs) call to notify
+        the store owner. Hooking it here means the confirmation auto-reply fires
+        for both submission paths without touching the core module.
+    -->
+    <type name="Magento\Contact\Model\Mail">
+        <plugin name="magenx_contact_confirmation_send" type="Magenx\ContactConfirmation\Plugin\SendConfirmationEmail"/>
+    </type>
+</config>

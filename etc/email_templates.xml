@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magenx. All rights reserved.
+ *
+ * NOTE: the id must equal the config path of the system.xml field that selects
+ * this template, with '/' replaced by '_' — Magento\Config\Model\Config\Source\
+ * Email\Template derives it that way for its "(Default)" option, and an
+ * undeclared id throws while the config form is built. In production mode
+ * Magento\Framework\View\Layout swallows that and renders the section BLANK —
+ * here that would be the STOCK General > Contacts section, which this module
+ * only extends. Field path contact/magenx_confirmation/email_template.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="contact_magenx_confirmation_email_template" label="Contact Form Auto-Reply" file="contact_confirmation.html" type="html" module="Magenx_ContactConfirmation" area="frontend"/>
+</config>

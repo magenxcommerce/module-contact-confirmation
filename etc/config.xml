@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magenx. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <contact>
+            <magenx_confirmation>
+                <!-- Off by default: a merchant opts in to the auto-reply. -->
+                <enabled>0</enabled>
+                <email_template>contact_magenx_confirmation_email_template</email_template>
+                <!-- Reuse the general store email identity by default. -->
+                <sender_email_identity>general</sender_email_identity>
+            </magenx_confirmation>
+        </contact>
+    </default>
+</config>
