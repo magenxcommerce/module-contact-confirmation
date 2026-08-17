@@ -23,7 +23,7 @@ class Config
     ) {
     }
 
-    public function isEnabled($storeId = null): bool
+    public function isEnabled(int|string|null $storeId = null): bool
     {
         return $this->scopeConfig->isSetFlag(
             self::XML_PATH_ENABLED,
@@ -32,7 +32,7 @@ class Config
         );
     }
 
-    public function getTemplateId($storeId = null): string
+    public function getTemplateId(int|string|null $storeId = null): string
     {
         return (string) $this->scopeConfig->getValue(
             self::XML_PATH_TEMPLATE,
@@ -41,7 +41,7 @@ class Config
         );
     }
 
-    public function getSenderIdentity($storeId = null): string
+    public function getSenderIdentity(int|string|null $storeId = null): string
     {
         return (string) $this->scopeConfig->getValue(
             self::XML_PATH_SENDER,
