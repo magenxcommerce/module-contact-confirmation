@@ -16,12 +16,24 @@ use Magento\Framework\DataObject;
  *
  * Magento\Contact\Model\Mail::send(string $replyTo, array $variables) is the
  * shared entry point for the Luma controller and the GraphQL contactUs
- * resolver. $variables['data'] is a DataObject carrying the submitted
- * name/email/telephone/comment (Luma) or name/email/telephone/comment (GraphQL
- * input) — the same shape in both flows.
+ * resolver, but the two do NOT hand it the same $variables['data'] type:
+ *
+ * - Luma (Magento\Contact\Controller\Index\Post::sendEmail) passes
+ *   `new DataObject($post)`.
+ * - GraphQL (Magento\ContactGraphQl\Model\Resolver\ContactUs::resolve) passes
+ *   the trimmed input **array** as-is.
+ *
+ * Core copes because it only ever uses `$variables['data']['name']`, which
+ * works on both (DataObject implements ArrayAccess). Anything reading the
+ * payload here has to handle both shapes too.
  */
 class SendConfirmationEmail
 {
+    /**
+     * Submitted fields copied into the auto-reply.
+     */
+    private const FIELDS = ['email', 'name', 'comment', 'telephone'];
+
     public function __construct(
         private readonly ConfirmationEmailSender $sender
     ) {
@@ -40,26 +52,46 @@ class SendConfirmationEmail
     {
         $data = $variables['data'] ?? null;
 
-        $email = '';
-        $name = '';
-        $comment = '';
-        $telephone = '';
-
-        if ($data instanceof DataObject) {
-            $email = (string) $data->getData('email');
-            $name = (string) $data->getData('name');
-            $comment = (string) $data->getData('comment');
-            $telephone = (string) $data->getData('telephone');
+        $values = [];
+        foreach (self::FIELDS as $field) {
+            $values[$field] = $this->readField($data, $field);
         }
 
-        if ($email === '' && is_string($replyTo)) {
-            $email = $replyTo;
+        if ($values['email'] === '' && is_string($replyTo)) {
+            $values['email'] = trim($replyTo);
         }
 
-        if ($email !== '') {
-            $this->sender->send($email, $name, $comment, $telephone);
+        if ($values['email'] !== '') {
+            $this->sender->send(
+                $values['email'],
+                $values['name'],
+                $values['comment'],
+                $values['telephone']
+            );
         }
 
         return $result;
+    }
+
+    /**
+     * Read one submitted field out of either payload shape.
+     *
+     * @param mixed  $data
+     * @param string $field
+     * @return string
+     */
+    private function readField($data, string $field): string
+    {
+        if ($data instanceof DataObject) {
+            $value = $data->getData($field);
+        } elseif (is_array($data)) {
+            $value = $data[$field] ?? null;
+        } elseif ($data instanceof \ArrayAccess) {
+            $value = $data->offsetExists($field) ? $data->offsetGet($field) : null;
+        } else {
+            return '';
+        }
+
+        return is_scalar($value) ? trim((string) $value) : '';
     }
 }

@@ -16,11 +16,15 @@ funnel through:
 - **Headless / GraphQL:** `Magento\ContactGraphQl\Model\Resolver\ContactUs`
 
 An `afterSend` plugin (`Plugin/SendConfirmationEmail`) reads the submitted
-`name / email / telephone / comment` from the `$variables['data']` DataObject
-and hands them to `Model/ConfirmationEmailSender`, which sends a store-scoped
-frontend email template to the visitor. The send is wrapped in try/catch and
-never rethrows — a failed auto-reply must not break the (already-sent)
-store-owner notification.
+`name / email / telephone / comment` out of `$variables['data']` and hands them
+to `Model/ConfirmationEmailSender`, which sends a store-scoped frontend email
+template to the visitor. The send is wrapped in try/catch and never rethrows —
+a failed auto-reply must not break the (already-sent) store-owner notification.
+
+The two paths do **not** pass the same payload type: Luma passes a
+`Magento\Framework\DataObject`, the GraphQL resolver passes the trimmed input
+**array**. The plugin handles both (plus any `ArrayAccess`), so the auto-reply
+carries the visitor's name and message on the headless path too.
 
 The storefront's `ContactUs` mutation is unchanged, so the `/api/graphql`
 persisted-query allowlist is **not** affected.
