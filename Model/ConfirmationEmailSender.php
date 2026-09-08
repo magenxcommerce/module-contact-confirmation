@@ -40,6 +40,15 @@ class ConfirmationEmailSender
      */
     public function send(string $email, string $name, string $comment, string $telephone = ''): void
     {
+        if ($email === '') {
+            return;
+        }
+
+        // Only resumed if actually suspended: StateInterface::resume() enables
+        // inline translation unconditionally, so calling it on an early return
+        // would turn it on for the rest of the request.
+        $suspended = false;
+
         try {
             $store = $this->storeManager->getStore();
             $storeId = (int) $store->getId();
@@ -49,11 +58,12 @@ class ConfirmationEmailSender
             }
 
             $templateId = $this->config->getTemplateId($storeId);
-            if ($templateId === '' || $email === '') {
+            if ($templateId === '') {
                 return;
             }
 
             $this->inlineTranslation->suspend();
+            $suspended = true;
 
             $this->transportBuilder
                 ->setTemplateIdentifier($templateId)
@@ -77,7 +87,9 @@ class ConfirmationEmailSender
                 'Magenx_ContactConfirmation: failed to send confirmation email: ' . $e->getMessage()
             );
         } finally {
-            $this->inlineTranslation->resume();
+            if ($suspended) {
+                $this->inlineTranslation->resume();
+            }
         }
     }
 }
