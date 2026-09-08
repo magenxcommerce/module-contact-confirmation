@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/magenxcommerce/module-contact-confirmation/compare/v1.0.1...v1.0.2) (2026-09-08)
+
+
+### Bug Fixes
+
+* read contact payload from array as well as DataObject ([ceba263](https://github.com/magenxcommerce/module-contact-confirmation/commit/ceba263f36e88064cfd8659a80446a8601b47ddf))
+* Support GraphQL payload shape in confirmation email plugin ([#8](https://github.com/magenxcommerce/module-contact-confirmation/issues/8)) ([ceba263](https://github.com/magenxcommerce/module-contact-confirmation/commit/ceba263f36e88064cfd8659a80446a8601b47ddf))
+
 ## [1.0.1](https://github.com/magenxcommerce/module-contact-confirmation/compare/v1.0.0...v1.0.1) (2026-08-17)
 
 
