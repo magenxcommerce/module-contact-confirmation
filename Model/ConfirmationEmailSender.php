@@ -41,6 +41,12 @@ class ConfirmationEmailSender
     public function send(string $email, string $name, string $comment, string $telephone = ''): void
     {
         if ($email === '') {
+            // Nothing to send to. Logged because the symptom on the storefront
+            // is indistinguishable from "module not working": the owner
+            // notification goes out and the visitor gets nothing.
+            $this->logger->warning(
+                'Magenx_ContactConfirmation: skipped auto-reply, no visitor email in the submission.'
+            );
             return;
         }
 
@@ -54,11 +60,19 @@ class ConfirmationEmailSender
             $storeId = (int) $store->getId();
 
             if (!$this->config->isEnabled($storeId)) {
+                $this->logger->debug(
+                    'Magenx_ContactConfirmation: auto-reply disabled for store ' . $storeId
+                    . ' (contact/magenx_confirmation/enabled).'
+                );
                 return;
             }
 
             $templateId = $this->config->getTemplateId($storeId);
             if ($templateId === '') {
+                $this->logger->warning(
+                    'Magenx_ContactConfirmation: no email template configured for store ' . $storeId
+                    . ' (contact/magenx_confirmation/email_template).'
+                );
                 return;
             }
 
@@ -82,9 +96,14 @@ class ConfirmationEmailSender
                 ->addTo($email, $name !== '' ? $name : $email);
 
             $this->transportBuilder->getTransport()->sendMessage();
+
+            $this->logger->debug(
+                'Magenx_ContactConfirmation: auto-reply sent to ' . $email . ' for store ' . $storeId . '.'
+            );
         } catch (\Throwable $e) {
             $this->logger->error(
-                'Magenx_ContactConfirmation: failed to send confirmation email: ' . $e->getMessage()
+                'Magenx_ContactConfirmation: failed to send confirmation email: ' . $e->getMessage(),
+                ['exception' => $e]
             );
         } finally {
             if ($suspended) {

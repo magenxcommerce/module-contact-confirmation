@@ -8,8 +8,13 @@
     <default>
         <contact>
             <magenx_confirmation>
-                <!-- Off by default: a merchant opts in to the auto-reply. -->
-                <enabled>0</enabled>
+                <!--
+                    On by default: installing and enabling the module IS the
+                    opt-in. Shipping it off meant a correct install sent nothing
+                    and looked broken; a merchant who wants it off has the
+                    Stores > Configuration > General > Contacts switch.
+                -->
+                <enabled>1</enabled>
                 <email_template>contact_magenx_confirmation_email_template</email_template>
                 <!-- Reuse the general store email identity by default. -->
                 <sender_email_identity>general</sender_email_identity>
