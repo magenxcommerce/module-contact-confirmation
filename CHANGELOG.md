@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/magenxcommerce/module-contact-confirmation/compare/v1.0.2...v1.0.3) (2026-09-11)
+
+
+### Bug Fixes
+
+* Improve logging and plugin robustness for contact confirmations ([#10](https://github.com/magenxcommerce/module-contact-confirmation/issues/10)) ([a49a1d2](https://github.com/magenxcommerce/module-contact-confirmation/commit/a49a1d2dbdc50cf9ec1f5daa64b6f93ad4529374))
+* Make the auto-reply fire on a stock install and log when it doesn't ([a49a1d2](https://github.com/magenxcommerce/module-contact-confirmation/commit/a49a1d2dbdc50cf9ec1f5daa64b6f93ad4529374))
+
 ## [1.0.2](https://github.com/magenxcommerce/module-contact-confirmation/compare/v1.0.1...v1.0.2) (2026-09-08)
 
 
