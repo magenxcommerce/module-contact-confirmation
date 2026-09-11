@@ -6,13 +6,19 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!--
-        Magento\Contact\Model\Mail::send() is the single chokepoint that BOTH the
-        Luma controller (Magento\Contact\Controller\Index\Post) and the GraphQL
+        MailInterface::send() is the single chokepoint that BOTH the Luma
+        controller (Magento\Contact\Controller\Index\Post) and the GraphQL
         resolver (Magento\ContactGraphQl\Model\Resolver\ContactUs) call to notify
         the store owner. Hooking it here means the confirmation auto-reply fires
         for both submission paths without touching the core module.
+
+        Declared on the INTERFACE, not on Magento\Contact\Model\Mail: both call
+        sites type-hint MailInterface, so a site that repoints the preference at
+        its own implementation (an SMTP/queue wrapper, a test double) would
+        silently stop firing a plugin bound to the concrete class. An interface
+        plugin applies to whatever implementation the preference resolves to.
     -->
-    <type name="Magento\Contact\Model\Mail">
+    <type name="Magento\Contact\Model\MailInterface">
         <plugin name="magenx_contact_confirmation_send" type="Magenx\ContactConfirmation\Plugin\SendConfirmationEmail"/>
     </type>
 </config>

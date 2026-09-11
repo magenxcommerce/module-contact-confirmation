@@ -7,14 +7,14 @@ declare(strict_types=1);
 namespace Magenx\ContactConfirmation\Plugin;
 
 use Magenx\ContactConfirmation\Model\ConfirmationEmailSender;
-use Magento\Contact\Model\Mail;
+use Magento\Contact\Model\MailInterface;
 use Magento\Framework\DataObject;
 
 /**
  * After Magento has emailed the store owner, also email the visitor a
  * confirmation/auto-reply.
  *
- * Magento\Contact\Model\Mail::send(string $replyTo, array $variables) is the
+ * MailInterface::send(string $replyTo, array $variables) is the
  * shared entry point for the Luma controller and the GraphQL contactUs
  * resolver, but the two do NOT hand it the same $variables['data'] type:
  *
@@ -40,7 +40,7 @@ class SendConfirmationEmail
     }
 
     /**
-     * @param Mail  $subject
+     * @param MailInterface $subject
      * @param mixed $result
      * @param mixed $replyTo   Visitor email (used as the notification Reply-To)
      * @param array $variables
@@ -48,7 +48,7 @@ class SendConfirmationEmail
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterSend(Mail $subject, $result, $replyTo = '', array $variables = [])
+    public function afterSend(MailInterface $subject, $result, $replyTo = '', array $variables = [])
     {
         $data = $variables['data'] ?? null;
 
@@ -61,14 +61,15 @@ class SendConfirmationEmail
             $values['email'] = trim($replyTo);
         }
 
-        if ($values['email'] !== '') {
-            $this->sender->send(
-                $values['email'],
-                $values['name'],
-                $values['comment'],
-                $values['telephone']
-            );
-        }
+        // Called unconditionally, empty address included: the sender owns every
+        // skip reason and logs it, so "no auto-reply arrived" is answerable
+        // from var/log instead of guesswork.
+        $this->sender->send(
+            $values['email'],
+            $values['name'],
+            $values['comment'],
+            $values['telephone']
+        );
 
         return $result;
     }

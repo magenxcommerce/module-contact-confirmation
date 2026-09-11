@@ -15,7 +15,9 @@ funnel through:
 - **Luma:** `Magento\Contact\Controller\Index\Post`
 - **Headless / GraphQL:** `Magento\ContactGraphQl\Model\Resolver\ContactUs`
 
-An `afterSend` plugin (`Plugin/SendConfirmationEmail`) reads the submitted
+An `afterSend` plugin (`Plugin/SendConfirmationEmail`) — declared on
+`Magento\Contact\Model\MailInterface`, not on the concrete `Mail`, so it still
+fires if the preference is repointed — reads the submitted
 `name / email / telephone / comment` out of `$variables['data']` and hands them
 to `Model/ConfirmationEmailSender`, which sends a store-scoped frontend email
 template to the visitor. The send is wrapped in try/catch and never rethrows —
@@ -35,12 +37,23 @@ persisted-query allowlist is **not** affected.
 
 | Field | Config path | Default |
 | --- | --- | --- |
-| Send Confirmation Email | `contact/magenx_confirmation/enabled` | No |
+| Send Confirmation Email | `contact/magenx_confirmation/enabled` | Yes |
 | Email Template | `contact/magenx_confirmation/email_template` | `contact_magenx_confirmation_email_template` |
 | Email Sender | `contact/magenx_confirmation/sender_email_identity` | `general` |
 
-Off by default — a merchant opts in. All settings are store-view scoped, so
-different store views can enable/translate the auto-reply independently.
+On by default — installing and enabling the module is the opt-in; set the
+switch to **No** to keep it installed but silent. All settings are store-view
+scoped, so different store views can enable/translate the auto-reply
+independently.
+
+### When no auto-reply arrives
+
+Every skip path is logged to `var/log/debug.log` (debug: disabled for the store,
+auto-reply sent) or `var/log/system.log` (warning: no visitor email in the
+submission, no template configured; error: the send itself threw). An empty log
+on submit means the plugin never ran — check that the module is enabled and that
+`Magento\Contact\Model\MailInterface` still resolves to an implementation the
+contact form actually calls.
 
 ## Template
 
